@@ -1,0 +1,36 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+#define MAX_PAGES 100 // Define a maximum size for the reference string
+
+// Function to find the optimal page to replace
+// It returns the index of the frame containing the page that will not be used 
+// for the longest time in the future.
+int find_optimal_page(const int frames_array[], int frames, const int pages[], int n, int current_index) {
+    int max_future_index = -1; // Index in the 'frames_array' to replace
+    int max_distance = -1;     // Longest distance to next use
+
+    for (int j = 0; j < frames; j++) {
+        int page_id = frames_array[j];
+        int distance = INT_MAX; // Initialize distance to infinity (means page is never used again)
+
+        // Search the rest of the reference string for the next use of this page
+        for (int k = current_index + 1; k < n; k++) {
+            if (pages[k] == page_id) {
+                distance = k; // Found next use at index k
+                break;
+            }
+        }
+
+        // If a page is never used again (distance remains INT_MAX), it's the best choice.
+        // If distance is not INT_MAX, we check if it's the farthest one we've seen so far.
+        if (distance == INT_MAX) {
+            return j; // Found a page that will never be used again: immediately return its frame index
+        }
+        
+        // Use the index k (the future index) as the distance metric
+        if (distance > max_distance) {
+            max_distance = distance;
+            max_future_index = j;
+        }
