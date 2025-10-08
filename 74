@@ -1,0 +1,36 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Constants based on the problem description
+#define LOGICAL_ADDRESS_SPACE 1024
+#define PAGE_SIZE 128
+#define NUM_PAGES 8
+
+// Predefined Page Table: Maps Page Number (index) to Frame Number (value)
+// Page 0 -> Frame 3
+// Page 1 -> Frame 5
+// Page 2 -> Frame 1
+// Page 3 -> Frame 7
+// Page 4 -> Frame 2
+// Page 5 -> Frame 6
+// Page 6 -> Frame 0
+// Page 7 -> Frame 4
+const int PAGE_TABLE[NUM_PAGES] = {3, 5, 1, 7, 2, 6, 0, 4};
+
+int main() {
+    int logical_address;
+    int page_number;
+    int offset;
+    int frame_number;
+    int physical_address;
+    
+    // Display fixed parameters
+    printf("Logical Address Space = %d bytes\n", LOGICAL_ADDRESS_SPACE);
+    printf("Page Size = %d bytes\n", PAGE_SIZE);
+    printf("Number of Pages = %d\n", NUM_PAGES);
+    printf("Number of Frames = %d\n", NUM_PAGES); // Assuming Number of Frames = Number of Pages
+    printf("Page Table:\n");
+    for (int i = 0; i < NUM_PAGES; i++) {
+        printf("Page %d -> Frame %d\n", i, PAGE_TABLE[i]);
+    }
+    
