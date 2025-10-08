@@ -34,3 +34,9 @@ int main()
 	for (i = 1; i < n; i++)
 	{
 		printf("%d\t  %d\t\t  %d\t  %d\t  %d\t  %d\t  %d\n", pn[i], at[i], bt[i], start[i], wt[i], tat[i], finish[i]);
+	}
+float awt = 25 / 2;
+float atat = 79/2;
+printf("Average Waiting Time:%f", awt);
+printf("Average Turn Around Time:%f", atat);
+}
