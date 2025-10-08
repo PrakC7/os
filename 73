@@ -1,0 +1,37 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Global matrices/vectors
+int P; // Number of processes
+int R; // Number of resources
+
+int **Allocation; // P x R
+int **Max;        // P x R
+int **Need;       // P x R
+int *Available;   // 1 x R
+
+// Function to allocate memory for a P x R matrix
+int** allocate_matrix(int rows, int cols) {
+    int **matrix = (int**)malloc(rows * sizeof(int*));
+    for (int i = 0; i < rows; i++) {
+        matrix[i] = (int*)malloc(cols * sizeof(int));
+    }
+    return matrix;
+}
+
+// Function to free memory for a P x R matrix
+void free_matrix(int **matrix, int rows) {
+    for (int i = 0; i < rows; i++) {
+        free(matrix[i]);
+    }
+    free(matrix);
+}
+
+// Function to read a P x R matrix from input
+void read_matrix(int **matrix, const char *name) {
+    printf("Enter %s matrix:\n", name);
+    for (int i = 0; i < P; i++) {
+        for (int j = 0; j < R; j++) {
+            if (scanf("%d", &matrix[i][j]) != 1) {
+                fprintf(stderr, "Error reading %s element at [%d][%d]\n", name, i, j);
+}
