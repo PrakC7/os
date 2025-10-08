@@ -1,0 +1,37 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <ctype.h>
+
+// Disk constants
+#define DISK_MIN 0
+#define DISK_MAX 199
+#define MAX_REQUESTS 20
+
+// Comparison function for qsort to sort in ascending order
+int compare_integers(const void *a, const void *b) {
+    return (*(int*)a - *(int*)b);
+}
+
+// Function to simulate the SCAN disk scheduling algorithm
+void simulate_scan(int requests[], int n, int initial_head, const char *direction) {
+    int sorted_requests[MAX_REQUESTS];
+    
+    // Copy and sort the requests
+    for (int i = 0; i < n; i++) {
+        sorted_requests[i] = requests[i];
+    }
+    
+    qsort(sorted_requests, n, sizeof(int), compare_integers);
+    
+    int current_head = initial_head;
+    int total_seek_operations = 0;
+    int seq_count = 0;
+    int seek_sequence[MAX_REQUESTS + 2]; // Max n requests + 2 boundary movements
+
+    // 1. Split the sorted requests into two groups
+    int requests_left_of_head[MAX_REQUESTS];
+    int requests_right_of_head[MAX_REQUESTS];
+    int left_count = 0;
+}
