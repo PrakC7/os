@@ -1,0 +1,36 @@
+#include <stdio.h>
+
+// Global shared counter, initialized to 0
+int shared_counter = 0;
+
+/**
+ * @brief Simulates a process incrementing the shared counter a specified number of times.
+ * * @param increments The number of times to increment the counter.
+ */
+void increment_counter(int increments) {
+    for (int i = 0; i < increments; i++) {
+        // Sequentially increment the shared counter
+        shared_counter++;
+    }
+}
+
+int main() {
+    int increments_p1, increments_p2;
+    int expected_value;
+
+    // 1. Take input for Process 1
+    printf("Enter how many times Process 1 should increment the counter: ");
+    if (scanf("%d", &increments_p1) != 1) {
+        fprintf(stderr, "Invalid input for Process 1 increments.\n");
+        return 1;
+    }
+
+    // 1. Take input for Process 2
+    printf("Enter how many times Process 2 should increment the counter: ");
+    if (scanf("%d", &increments_p2) != 1) {
+        fprintf(stderr, "Invalid input for Process 2 increments.\n");
+        return 1;
+    }
+
+    // Calculate the expected final value
+    // Since the initial counter is 0, the expected value is the sum of increments.
