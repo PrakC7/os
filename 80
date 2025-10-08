@@ -1,0 +1,36 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define DISK_SIZE 100 // Total number of blocks (0 to 99)
+#define FREE 0        // Block status: Free
+#define ALLOCATED 1   // Block status: Allocated
+
+// Global array representing the disk: 0 is Free, 1 is Allocated
+int disk[DISK_SIZE];
+
+// Global array to track the *next* block in a linked allocation chain.
+// index = current block, value = next block in the file (-1 means end of file).
+int next_block[DISK_SIZE];
+
+// Function to display the main menu
+void display_menu() {
+    printf("File Allocation Strategies Simulation\n");
+    printf("1. Sequential Allocation\n");
+    printf("2. Indexed Allocation\n");
+    printf("3. Linked Allocation\n");
+    printf("4. Exit\n");
+}
+
+// Function to check and validate file size input
+int get_file_size() {
+    int file_size;
+    printf("Enter file size (in blocks): ");
+    if (scanf("%d", &file_size) != 1) {
+        printf("Invalid input\n");
+        // Clear input buffer for subsequent reads
+        while (getchar() != '\n');
+        return -1;
+    }
+
+    if (file_size <= 0 || file_size > DISK_SIZE) {
