@@ -1,37 +1,70 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-
-#define MAX_REQUESTS 100
-#define DISK_MIN 0 // The minimum cylinder is always 0
-
-// Comparison function for qsort to sort in ascending order
-int compare_integers(const void *a, const void *b) {
-    return (*(int*)a - *(int*)b);
+    
+    // 2b. Service requests to the LEFT (in reverse sorted order: from DISK_MIN up to the head)
+    // Requests left of head are sorted ascending, so we traverse them normally here (0 to initial_head)
+    for (int i = 0; i < left_count; i++) {
+        int next_request = requests_left_of_head[i];
+        total_seek_operations += abs(next_request - current_head);
+        current_head = next_request;
+        printf(" -> %d", current_head);
+    }
+    
+    printf("\n");
+    
+    // Output Total Seek Operations
+    printf("Total Seek Operations: %ld\n", total_seek_operations);
 }
 
-// Function to simulate the SCAN disk scheduling algorithm
-void simulate_scan(int requests[], int n, int initial_head, int disk_max) {
-    int sorted_requests[MAX_REQUESTS];
-    int current_head = initial_head;
-    long total_seek_operations = 0;
-    
-    // Copy and sort the requests
-    for (int i = 0; i < n; i++) {
-        sorted_requests[i] = requests[i];
-    }
-    qsort(sorted_requests, n, sizeof(int), compare_integers);
-    
-    // 1. Split the sorted requests into two groups
-    int requests_left_of_head[MAX_REQUESTS];
-    int requests_right_of_head[MAX_REQUESTS];
-    int left_count = 0;
-    int right_count = 0;
+int main() {
+    int n;
+    int requests[MAX_REQUESTS];
+    int initial_head;
+    int disk_max;
 
+    // Input 1: Number of disk requests
+    printf("Enter number of disk requests: ");
+    if (scanf("%d", &n) != 1 || n <= 0 || n > MAX_REQUESTS) {
+        fprintf(stderr, "Invalid input for number of requests.\n");
+        return 1;
+    }
+    
+    // Input 2: Disk requests
+    printf("Enter the disk requests (space separated): ");
     for (int i = 0; i < n; i++) {
-        if (sorted_requests[i] < initial_head) {
-            requests_left_of_head[left_count++] = sorted_requests[i];
-        } else {
-            requests_right_of_head[right_count++] = sorted_requests[i];
+        if (scanf("%d", &requests[i]) != 1) {
+            fprintf(stderr, "Invalid input for disk request %d.\n", i + 1);
+            return 1;
         }
+    }
+    
+    // Input 3: Initial head position
+    printf("Enter initial head position: ");
+    if (scanf("%d", &initial_head) != 1) {
+        fprintf(stderr, "Invalid input for initial head position.\n");
+        return 1;
+    }
+    
+    // Input 4: Disk size (max cylinder number)
+    printf("Enter disk size (max cylinder number): ");
+    if (scanf("%d", &disk_max) != 1 || disk_max <= 0) {
+        fprintf(stderr, "Invalid input for disk size.\n");
+        return 1;
+    }
+
+    // Input validation (requests must be within disk limits)
+    for (int i = 0; i < n; i++) {
+        if (requests[i] < DISK_MIN || requests[i] > disk_max) {
+             fprintf(stderr, "Disk request %d is outside the range [0, %d].\n", requests[i], disk_max);
+             return 1;
+        }
+    }
+    if (initial_head < DISK_MIN || initial_head > disk_max) {
+        fprintf(stderr, "Initial head position is outside the range [0, %d].\n", disk_max);
+        return 1;
+    }
+
+    // The SCAN simulation is run assuming the initial direction is RIGHT (towards DISK_MAX).
+    simulate_scan(requests, n, initial_head, disk_max);
+
+    return 0;
 }
