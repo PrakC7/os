@@ -1,37 +1,58 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include <ctype.h>
-
-// Disk constants
-#define DISK_MIN 0
-#define DISK_MAX 199
-#define MAX_REQUESTS 20
-
-// Comparison function for qsort to sort in ascending order
-int compare_integers(const void *a, const void *b) {
-    return (*(int*)a - *(int*)b);
+    
+    // Output Seek Sequence
+    printf("Seek Sequence:");
+    for (int i = 0; i < seq_count; i++) {
+        printf(" %d", seek_sequence[i]);
+    }
+    printf(" \n");
 }
 
-// Function to simulate the SCAN disk scheduling algorithm
-void simulate_scan(int requests[], int n, int initial_head, const char *direction) {
-    int sorted_requests[MAX_REQUESTS];
-    
-    // Copy and sort the requests
-    for (int i = 0; i < n; i++) {
-        sorted_requests[i] = requests[i];
+int main() {
+    int n;
+    int requests[MAX_REQUESTS];
+    int initial_head;
+    char direction[10];
+
+    // Input 1: Number of disk requests
+    printf("Enter number of disk requests (max %d): ", MAX_REQUESTS);
+    if (scanf("%d", &n) != 1 || n <= 0 || n > MAX_REQUESTS) {
+        fprintf(stderr, "Invalid input for number of requests.\n");
+        return 1;
     }
     
-    qsort(sorted_requests, n, sizeof(int), compare_integers);
+    // Input 2: Disk requests
+    printf("Enter the disk requests (space separated): ");
+    for (int i = 0; i < n; i++) {
+        if (scanf("%d", &requests[i]) != 1 || requests[i] < DISK_MIN || requests[i] > DISK_MAX) {
+            fprintf(stderr, "Invalid input for disk request %d.\n", i + 1);
+            return 1;
+        }
+    }
     
-    int current_head = initial_head;
-    int total_seek_operations = 0;
-    int seq_count = 0;
-    int seek_sequence[MAX_REQUESTS + 2]; // Max n requests + 2 boundary movements
+    // Input 3: Initial head position
+    printf("Enter initial head position (0-%d): ", DISK_MAX);
+    if (scanf("%d", &initial_head) != 1 || initial_head < DISK_MIN || initial_head > DISK_MAX) {
+        fprintf(stderr, "Invalid input for initial head position.\n");
+        return 1;
+    }
+    
+    // Input 4: Direction of head movement
+    printf("Enter direction (left/right): ");
+    if (scanf("%s", direction) != 1) {
+        fprintf(stderr, "Invalid input for direction.\n");
+        return 1;
+    }
+    
+    // Ensure direction is lowercase for reliable comparison
+    for(char *p = direction; *p; p++) *p = tolower(*p);
 
-    // 1. Split the sorted requests into two groups
-    int requests_left_of_head[MAX_REQUESTS];
-    int requests_right_of_head[MAX_REQUESTS];
-    int left_count = 0;
+    if (strcmp(direction, "left") != 0 && strcmp(direction, "right") != 0) {
+        fprintf(stderr, "Invalid direction entered. Use 'left' or 'right'.\n");
+        return 1;
+    }
+
+    simulate_scan(requests, n, initial_head, direction);
+
+    return 0;
 }
