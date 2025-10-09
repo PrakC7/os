@@ -34,4 +34,5 @@ int main(){
     printf("Total head movement is %d\n",t);
     free(r);
     free(v);
+    return 0;
 }
