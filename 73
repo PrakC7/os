@@ -1,63 +1,67 @@
 #include <stdio.h>
-#include <stdlib.h>
-
-// Global matrices/vectors
-int P; // Number of processes
-int R; // Number of resources
-
-int **Allocation; // P x R
-int **Max;        // P x R
-int **Need;       // P x R
-int *Available;   // 1 x R
-
-// Function to allocate memory for a P x R matrix
-int** allocate_matrix(int rows, int cols) {
-    int **matrix = (int**)malloc(rows * sizeof(int*));
-    for (int i = 0; i < rows; i++) {
-        matrix[i] = (int*)malloc(cols * sizeof(int));
     }
-    return matrix;
-}
 
-// Function to free memory for a P x R matrix
-void free_matrix(int **matrix, int rows) {
-    for (int i = 0; i < rows; i++) {
-        free(matrix[i]);
+    // 2. Allocate memory
+    Allocation = allocate_matrix(P, R);
+    Max = allocate_matrix(P, R);
+    Need = allocate_matrix(P, R);
+    Available = (int*)malloc(R * sizeof(int));
+
+    // 3. Read Allocation and Max matrices
+    read_matrix(Allocation, "Allocation");
+    read_matrix(Max, "Max");
+
+    // 4. Read Available vector
+    printf("Enter Available vector:\n");
+    for (int i = 0; i < R; i++) {
+        if (scanf("%d", &Available[i]) != 1) {
+            fprintf(stderr, "Error reading Available vector element %d\n", i);
+            return 1;
+        }
     }
-    free(matrix);
-}
 
-// Function to read a P x R matrix from input
-void read_matrix(int **matrix, const char *name) {
-    printf("Enter %s matrix:\n", name);
+    // 5. Compute Need matrix
+    compute_need();
+
+    // 6. Check for safety
+    int *safe_sequence = (int*)malloc(P * sizeof(int));
+    int *deadlocked_processes = (int*)malloc(P * sizeof(int));
+
+    // Initialize deadlocked_processes with a sentinel value (-1) for reliable printing
     for (int i = 0; i < P; i++) {
-        for (int j = 0; j < R; j++) {
-            if (scanf("%d", &matrix[i][j]) != 1) {
-                fprintf(stderr, "Error reading %s element at [%d][%d]\n", name, i, j);
-                exit(1);
+        deadlocked_processes[i] = -1;
+    }
+
+    if (is_safe(safe_sequence, deadlocked_processes)) {
+        printf("No deadlock\n");
+        // FIX for Safe sequence formatting: No space after colon
+        printf("Safe sequence: P%d", safe_sequence[0]);
+        for (int i = 1; i < P; i++) {
+            printf(" P%d", safe_sequence[i]);
+        }
+        printf(" \n");
+    } else {
+        printf("Deadlock:"); // FIX for Deadlock formatting: No space after colon
+        
+        // Print all collected deadlocked processes, stopping at the sentinel value
+        for (int i = 0; i < P; i++) {
+            if (deadlocked_processes[i] != -1) {
+                // Print all PIDs with a leading space
+                printf(" P%d", deadlocked_processes[i]);
+            } else {
+                break; // Stop when the sentinel value is encountered
             }
         }
+        printf(" \n");
     }
-}
 
-// Function to compute the Need matrix: Need = Max - Allocation
-void compute_need() {
-    for (int i = 0; i < P; i++) {
-        for (int j = 0; j < R; j++) {
-            Need[i][j] = Max[i][j] - Allocation[i][j];
-        }
-    }
-}
+    // 7. Free memory
+    free(Available);
+    free(safe_sequence);
+    free(deadlocked_processes);
+    free_matrix(Allocation, P);
+    free_matrix(Max, P);
+    free_matrix(Need, P);
 
-/**
- * @brief Banker's Algorithm Safety Check
- * @return 1 if safe, 0 if deadlocked
- */
-int is_safe(int safe_sequence[], int *deadlocked_processes) {
-    int *Work = (int*)malloc(R * sizeof(int));
-    int *Finish = (int*)calloc(P, sizeof(int)); // Initialized to 0 (false)
-    int count = 0;
-    int deadlocked_count = 0;
-
-    // Initialize Work vector with Available vector
+    return 0;
 }
