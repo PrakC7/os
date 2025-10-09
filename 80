@@ -1,36 +1,67 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#define DISK_SIZE 100 // Total number of blocks (0 to 99)
-#define FREE 0        // Block status: Free
-#define ALLOCATED 1   // Block status: Allocated
-
-// Global array representing the disk: 0 is Free, 1 is Allocated
-int disk[DISK_SIZE];
-
-// Global array to track the *next* block in a linked allocation chain.
-// index = current block, value = next block in the file (-1 means end of file).
-int next_block[DISK_SIZE];
-
-// Function to display the main menu
-void display_menu() {
-    printf("File Allocation Strategies Simulation\n");
-    printf("1. Sequential Allocation\n");
-    printf("2. Indexed Allocation\n");
-    printf("3. Linked Allocation\n");
-    printf("4. Exit\n");
+            int next_block_id = allocated_blocks[i + 1];
+            next_block[current_block] = next_block_id;
+            printf(" %d ->", current_block);
+        } else {
+            // Last block in the file
+            next_block[current_block] = -1; // -1 represents NULL/End
+            printf(" %d -> NULL\n", current_block);
+        }
+    }
 }
 
-// Function to check and validate file size input
-int get_file_size() {
+// ---------------------------------------------
+// Main Function
+// ---------------------------------------------
+int main() {
+    int choice;
     int file_size;
-    printf("Enter file size (in blocks): ");
-    if (scanf("%d", &file_size) != 1) {
-        printf("Invalid input\n");
-        // Clear input buffer for subsequent reads
-        while (getchar() != '\n');
-        return -1;
+    
+    // Initial Disk Setup: All blocks are FREE (0)
+    for (int i = 0; i < DISK_SIZE; i++) {
+        disk[i] = FREE;
+        next_block[i] = -1; // Initialize linked list pointers to -1
     }
 
-    if (file_size <= 0 || file_size > DISK_SIZE) {
+    while (1) {
+        display_menu();
+        
+        printf("Enter your choice: ");
+        if (scanf("%d", &choice) != 1) {
+            printf("Invalid input\n");
+            // Clear input buffer
+            while (getchar() != '\n'); 
+            continue;
+        }
+
+        if (choice == 4) {
+            // printf("Exit");
+            break;
+        }
+
+        // Handle allocation strategies (1, 2, or 3)
+        if (choice >= 1 && choice <= 3) {
+            file_size = get_file_size();
+            if (file_size == -1) {
+                continue; // Invalid file size, return to menu
+            }
+
+            switch (choice) {
+                case 1:
+                    sequential_allocation(file_size);
+                    break;
+                case 2:
+                    indexed_allocation(file_size);
+                    break;
+                case 3:
+                    linked_allocation(file_size);
+                    break;
+            }
+        } else {
+            printf("Invalid choice\n");
+        }
+    }
+
+    return 0;
+}
+
