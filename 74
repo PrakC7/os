@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 
 // Constants based on the problem description
 #define LOGICAL_ADDRESS_SPACE 1024
@@ -34,3 +33,47 @@ int main() {
         printf("Page %d -> Frame %d\n", i, PAGE_TABLE[i]);
     }
     
+    // 1. Take logical address as input
+    printf("Enter a logical address (0 - %d): ", LOGICAL_ADDRESS_SPACE - 1);
+    
+    if (scanf("%d", &logical_address) != 1) {
+        fprintf(stderr, "Invalid input.\n");
+        return 1;
+    }
+
+    // 4. Validate the entered logical address
+    if (logical_address < 0 || logical_address >= LOGICAL_ADDRESS_SPACE) {
+        printf("Invalid logical address\n");
+        return 0;
+    }
+
+    // Address is valid, proceed with translation
+    printf("Logical Address %d is in:\n", logical_address);
+    
+    // 2. Calculate Page Number and Offset
+    page_number = logical_address / PAGE_SIZE;
+    offset = logical_address % PAGE_SIZE;
+
+    printf("Page Number = %d\n", page_number);
+    printf("Offset = %d\n", offset);
+
+    // 3. Use the page table to determine the corresponding frame number
+    // The page number must be a valid index into the PAGE_TABLE array
+    if (page_number >= 0 && page_number < NUM_PAGES) {
+        frame_number = PAGE_TABLE[page_number];
+        printf("Frame Number from Page Table = %d\n", frame_number);
+
+        // 4. Calculate and display the physical address
+        physical_address = (frame_number * PAGE_SIZE) + offset;
+        
+        printf("Physical Address = (Frame %d * %d) + %d = %d\n",
+               frame_number, PAGE_SIZE, offset, physical_address);
+    } else {
+        // This case should not be reached if the initial address validation is correct, 
+        // as page_number is derived from a valid logical_address.
+        printf("Error: Page number is outside the bounds of the page table.\n");
+    }
+
+    return 0;
+}
+
