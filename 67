@@ -34,3 +34,17 @@ int main(){
         if(a==0){
             pf++;
             f[ft]=rs[i];
+            if(ft==fs-1){
+                ft=0;
+            }
+            else{
+                ft++;
+            }
+            for(j=0;j<fs;j++){
+                printf("%d ",f[j]);
+            }
+        }
+        printf("\n");
+    }
+    printf("No.of pages faults: %d\n",pf);
+}
