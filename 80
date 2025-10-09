@@ -1,4 +1,9 @@
 #include <stdio.h>
+    // Print and set up the linked list structure
+    for (int i = 0; i < allocated_count; i++) {
+        int current_block = allocated_blocks[i];
+        
+        if (i < allocated_count - 1) {
             int next_block_id = allocated_blocks[i + 1];
             next_block[current_block] = next_block_id;
             printf(" %d ->", current_block);
