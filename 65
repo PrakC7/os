@@ -34,4 +34,10 @@ int main(){
 			f2=f2+fra2;
 			printf("External fragmentation for partition is:%d",fra2);
 		}
+	}
+	printf("Process\tmemory\tallocatedmemory");
+	for(i=0;i<p1;i++)
+	printf("\n%5d\t%5d\t%5d",i+1,s,m1[i]);
+	f=f1+f2;
+	printf("\nThe tot no of fragmentation is:%d",f);
 }
