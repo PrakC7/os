@@ -1,36 +1,74 @@
 #include <stdio.h>
-#include <stdlib.h>
 
-#define MAX_PAGES 100 // Define a maximum size for the reference string
+            for (int j = 0; j < frames; j++) {
+                if (frames_array[j] == -1) {
+                    empty_frame_index = j;
+                    break; // Found an empty frame, prioritize filling it
+                }
+                
+                // Track the Least Recently Used (LRU) page if no empty frame is found yet
+                if (last_used_time[j] < min_time) {
+                    min_time = last_used_time[j];
+                    lru_frame_index = j;
+                }
+            }
 
-// Function to simulate the LRU algorithm
-int simulate_lru(int pages[], int n, int frames) {
-    // frames_array: Represents the physical memory frames, storing page IDs. Initialized to -1 (empty).
-    int *frames_array = (int*)malloc(frames * sizeof(int));
-    
-    // last_used_time: Tracks the time index (or age) when the page in the corresponding frame was last used.
-    int *last_used_time = (int*)malloc(frames * sizeof(int));
-    
-    int page_faults = 0;
-    int current_time = 0; // Acts as a counter to record "time of last use"
+            // 4. Perform replacement
+            if (empty_frame_index != -1) {
+                // Case A: Empty frame available
+                frame_index = empty_frame_index;
+            } else {
+                // Case B: Frames full, replace the LRU page
+                frame_index = lru_frame_index;
+            }
 
-    // Initialize frames and time tracking arrays
-    for (int i = 0; i < frames; i++) {
-        frames_array[i] = -1;
-        last_used_time[i] = 0;
+            // Load the new page into the chosen frame
+            frames_array[frame_index] = incoming_page;
+            // Update the last used time for the newly loaded page
+            last_used_time[frame_index] = current_time;
+        }
     }
 
-    // Process the entire page reference string
+    free(frames_array);
+    free(last_used_time);
+    return page_faults;
+}
+
+int main() {
+    int n; // number of pages in the reference string
+    int frames; // number of available frames
+    int pages[MAX_PAGES];
+    
+    // Input for number of pages
+    printf("Enter number of pages: ");
+    if (scanf("%d", &n) != 1 || n <= 0 || n > MAX_PAGES) {
+        fprintf(stderr, "Invalid input for number of pages.\n");
+        return 1;
+    }
+    
+    // Input for the page reference string
+    printf("Enter the page reference string: ");
     for (int i = 0; i < n; i++) {
-        int incoming_page = pages[i];
-        int page_found = 0;
-        int frame_index = -1;
+        if (scanf("%d", &pages[i]) != 1) {
+            fprintf(stderr, "Invalid input while reading page reference string.\n");
+            return 1;
+        }
+    }
+    
+    // Input for number of frames
+    printf("Enter number of frames: ");
+    if (scanf("%d", &frames) != 1 || frames <= 0) {
+        fprintf(stderr, "Invalid input for number of frames.\n");
+        return 1;
+    }
 
-        current_time++; // Advance time for the current reference
+    // Simulate LRU
+    int total_faults = simulate_lru(pages, n, frames);
 
-        // 1. Check for a HIT (Page found in a frame)
-        for (int j = 0; j < frames; j++) {
-            if (frames_array[j] == incoming_page) {
-                page_found = 1;
-                frame_index = j;
-                break;
+    // Output the result
+    printf("Total Page Faults = %d\n", total_faults);
+
+    return 0;
+}
+
+
