@@ -1,4 +1,46 @@
 #include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_PAGES 100 // Define a maximum size for the reference string
+
+// Function to simulate the LRU algorithm
+int simulate_lru(int pages[], int n, int frames) {
+    // frames_array: Represents the physical memory frames, storing page IDs. Initialized to -1 (empty).
+    int *frames_array = (int*)malloc(frames * sizeof(int));
+    
+    // last_used_time: Tracks the time index (or age) when the page in the corresponding frame was last used.
+    int *last_used_time = (int*)malloc(frames * sizeof(int));
+    
+    int page_faults = 0;
+    int current_time = 0; // Acts as a counter to record "time of last use"
+
+    // Initialize frames and time tracking arrays
+    for (int i = 0; i < frames; i++) {
+        frames_array[i] = -1;
+        last_used_time[i] = 0;
+    }
+
+    // Process the entire page reference string
+    for (int i = 0; i < n; i++) {
+        int incoming_page = pages[i];
+        int page_found = 0;
+        int frame_index = -1;
+
+        current_time++; // Advance time for the current reference
+
+        // 1. Check for a HIT (Page found in a frame)
+        for (int j = 0; j < frames; j++) {
+            if (frames_array[j] == incoming_page) {
+                page_found = 1;
+                frame_index = j;
+                break;
+            }
+            page_faults++;
+
+            // 3. Find an empty frame or the LRU page
+            int empty_frame_index = -1;
+            int lru_frame_index = 0;
+            int min_time = last_used_time[0];
 
             for (int j = 0; j < frames; j++) {
                 if (frames_array[j] == -1) {
