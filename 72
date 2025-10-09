@@ -34,3 +34,21 @@ int main() {
 
     // Calculate the expected final value
     // Since the initial counter is 0, the expected value is the sum of increments.
+    expected_value = increments_p1 + increments_p2;
+
+    // 2. Execute the increments sequentially
+    
+    // Process 1 runs first
+    increment_counter(increments_p1);
+
+    // Process 2 runs second
+    increment_counter(increments_p2);
+
+    // The final value will equal the expected value due to sequential execution.
+    
+    // 3. Display the result
+    printf("Final counter value (expected: %d): %d\n", expected_value, shared_counter);
+
+    return 0;
+}
+
