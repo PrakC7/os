@@ -34,4 +34,30 @@ void read_matrix(int **matrix, const char *name) {
         for (int j = 0; j < R; j++) {
             if (scanf("%d", &matrix[i][j]) != 1) {
                 fprintf(stderr, "Error reading %s element at [%d][%d]\n", name, i, j);
+                exit(1);
+            }
+        }
+    }
+}
+
+// Function to compute the Need matrix: Need = Max - Allocation
+void compute_need() {
+    for (int i = 0; i < P; i++) {
+        for (int j = 0; j < R; j++) {
+            Need[i][j] = Max[i][j] - Allocation[i][j];
+        }
+    }
+}
+
+/**
+ * @brief Banker's Algorithm Safety Check
+ * @return 1 if safe, 0 if deadlocked
+ */
+int is_safe(int safe_sequence[], int *deadlocked_processes) {
+    int *Work = (int*)malloc(R * sizeof(int));
+    int *Finish = (int*)calloc(P, sizeof(int)); // Initialized to 0 (false)
+    int count = 0;
+    int deadlocked_count = 0;
+
+    // Initialize Work vector with Available vector
 }
