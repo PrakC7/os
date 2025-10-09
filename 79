@@ -1,8 +1,53 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
 
-        // 2a. Service requests to the LEFT (in reverse sorted order)
-        for (int i = before_count - 1; i >= 0; i--) {
-            int next_request = requests_before_head[i];
+#define MAX_REQUESTS 100
+
+// Comparison function for qsort to sort in ascending order
+int compare_integers(const void *a, const void *b) {
+    return (*(int*)a - *(int*)b);
+}
+
+// Function to simulate the LOOK disk scheduling algorithm
+void simulate_look(int requests[], int n, int initial_head, int direction) {
+    int sorted_requests[MAX_REQUESTS];
+    
+    // Copy and sort the requests
+    for (int i = 0; i < n; i++) {
+        sorted_requests[i] = requests[i];
+    }
+    qsort(sorted_requests, n, sizeof(int), compare_integers);
+    
+    int current_head = initial_head;
+    int total_seek_time = 0;
+
+    // 1. Separate requests into two groups relative to the initial head position
+    int requests_before_head[MAX_REQUESTS];
+    int requests_after_head[MAX_REQUESTS];
+    int before_count = 0;
+    int after_count = 0;
+
+    // The current head might overlap with a request, but we only service it once.
+    for (int i = 0; i < n; i++) {
+        if (sorted_requests[i] < initial_head) {
+            requests_before_head[before_count++] = sorted_requests[i];
+        } else {
+            requests_after_head[after_count++] = sorted_requests[i];
+        }
+    }
+    
+    printf("Seek sequence:\n");
+    printf("%d", initial_head);
+
+    // 2. Perform the initial sweep based on the direction (1 for right, 0 for left)
+    if (direction == 1) {
+        // --- Move RIGHT first ---
+        
+        // 2a. Service requests to the RIGHT (already sorted ascending)
+        for (int i = 0; i < after_count; i++) {
+            int next_request = requests_after_head[i];
             total_seek_time += abs(next_request - current_head);
             current_head = next_request;
             printf(" -> %d", current_head);
